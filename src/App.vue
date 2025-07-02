@@ -1,18 +1,7 @@
 <template>
   <div class="app">
     <div class="game-container">
-      <h1 class="game-title">🎯 記憶卡牌遊戲</h1>
-
-      <div class="game-settings">
-        <div class="setting-item">
-          遊戲模式：
-          <select v-model="gameMode" @change="resetGame">
-            <option value="2x2">2×2 (4張 - 測試用)</option>
-            <option value="4x3">4×3 (12張 - 簡單)</option>
-            <option value="4x4">4×4 (16張 - 中等)</option>
-          </select>
-        </div>
-      </div>
+      <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
 
       <GameStats
         :game-time="gameTime"
@@ -21,17 +10,16 @@
         :accuracy="accuracy"
       />
 
-      <GameControls :game-started="gameStarted" @start-game="startGame" @reset-game="resetGame" />
+      <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
 
-      <GameBoard v-if="gameStarted" :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
+      <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
 
       <VictoryModal
         v-if="showVictory"
-        :final-time="finalTime"
-        :correct-matches="correctMatches"
-        :wrong-matches="wrongMatches"
+        :game-time="gameTime"
         :accuracy="accuracy"
-        @close="closeVictory"
+        @restart="restartGame"
+        @close="showVictory = false"
       />
     </div>
   </div>
@@ -56,39 +44,30 @@ export default {
       gameMode: '4x3',
       cards: [],
       flippedCards: [],
-      gameStarted: false,
       gameTime: 0,
-      gameTimer: null,
       correctMatches: 0,
       wrongMatches: 0,
       showVictory: false,
-      finalTime: 0,
-      // 使用更精美的 emoji 圖案
-      emojis: [
-        '🌟',
-        '⭐',
-        '✨',
-        '💎',
-        '🔥',
-        '❤️',
-        '💜',
-        '💙',
-        '🌈',
-        '🦄',
-        '🎯',
-        '🎪',
-        '🎨',
-        '🎭',
-        '🎪',
-        '🎊',
-        '🏆',
-        '🥇',
-        '👑',
-        '💰',
-        '🎁',
-        '🎉',
-        '🌺',
-        '🌸',
+      timer: null,
+      isGameStarted: false,
+      canFlip: true,
+
+      // 圖片路徑陣列 (跳過 D0，使用 D1-D16)
+      cardImages: [
+        '/img/diamonds/D1.png',
+        '/img/diamonds/D2.png',
+        '/img/diamonds/D3.png',
+        '/img/diamonds/D4.png',
+        '/img/diamonds/D5.png',
+        '/img/diamonds/D6.png',
+        '/img/diamonds/D7.png',
+        '/img/diamonds/D8.png',
+        '/img/diamonds/D9.png',
+        '/img/diamonds/D10.png',
+        '/img/diamonds/J10.png',
+        '/img/diamonds/K10.png',
+        '/img/diamonds/Q10.png',
+        // 如果還有更多圖片可以繼續加
       ],
     }
   },
@@ -97,41 +76,68 @@ export default {
       const total = this.correctMatches + this.wrongMatches
       return total === 0 ? 100 : Math.round((this.correctMatches / total) * 100)
     },
+    gameComplete() {
+      return this.cards.every((card) => card.matched)
+    },
+  },
+  mounted() {
+    this.initializeGame()
+  },
+  beforeUnmount() {
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
   },
   methods: {
-    startGame() {
-      this.gameStarted = true
-      this.setupCards()
-      this.startTimer()
+    initializeGame() {
+      this.resetGameStats()
+      this.createCards()
     },
-    resetGame() {
-      this.gameStarted = false
-      this.stopTimer()
+
+    resetGameStats() {
       this.gameTime = 0
       this.correctMatches = 0
       this.wrongMatches = 0
       this.flippedCards = []
       this.showVictory = false
-      this.cards = []
-    },
-    setupCards() {
-      const modeMap = { '2x2': 4, '4x3': 12, '4x4': 16 }
-      const total = modeMap[this.gameMode]
-      const pairs = total / 2
+      this.isGameStarted = false
+      this.canFlip = true
 
-      if (pairs > this.emojis.length) {
-        console.error(`需要 ${pairs} 對表情符號，但只有 ${this.emojis.length} 個`)
-        return
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
+
+    createCards() {
+      const modes = {
+        '2x2': 4,
+        '4x3': 12,
+        '4x4': 16,
       }
 
-      const selected = this.emojis.slice(0, pairs)
-      const cards = selected.flatMap((emoji) => [
-        { emoji, flipped: false, matched: false },
-        { emoji, flipped: false, matched: false },
+      const totalCards = modes[this.gameMode]
+      const pairsNeeded = totalCards / 2
+
+      // 確保有足夠的圖片
+      if (pairsNeeded > this.cardImages.length) {
+        console.warn(`需要 ${pairsNeeded} 種圖片，但只有 ${this.cardImages.length} 種`)
+      }
+
+      // 選擇需要的圖片
+      const selectedImages = this.cardImages.slice(0, pairsNeeded)
+
+      // 創建配對的卡牌
+      const cardPairs = selectedImages.flatMap((image) => [
+        { id: Math.random(), image, flipped: false, matched: false },
+        { id: Math.random(), image, flipped: false, matched: false },
       ])
-      this.cards = this.shuffle(cards)
+
+      // 洗牌
+      this.cards = this.shuffleArray(cardPairs)
     },
-    shuffle(array) {
+
+    shuffleArray(array) {
       const shuffled = [...array]
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
@@ -139,47 +145,82 @@ export default {
       }
       return shuffled
     },
+
     flipCard(index) {
-      const card = this.cards[index]
-      if (card.flipped || card.matched || this.flippedCards.length >= 2) return
-      card.flipped = true
+      if (!this.canFlip || this.cards[index].flipped || this.cards[index].matched) {
+        return
+      }
+
+      // 開始計時
+      if (!this.isGameStarted) {
+        this.startTimer()
+        this.isGameStarted = true
+      }
+
+      // 翻開卡牌
+      this.cards[index].flipped = true
       this.flippedCards.push(index)
-      if (this.flippedCards.length === 2) this.checkMatch()
+
+      // 檢查是否翻開兩張
+      if (this.flippedCards.length === 2) {
+        this.canFlip = false
+        setTimeout(() => {
+          this.checkMatch()
+        }, 1000)
+      }
     },
+
     checkMatch() {
-      const [i1, i2] = this.flippedCards
-      const c1 = this.cards[i1],
-        c2 = this.cards[i2]
-      setTimeout(() => {
-        if (c1.emoji === c2.emoji) {
-          c1.matched = c2.matched = true
-          this.correctMatches++
-          if (this.cards.every((c) => c.matched)) this.gameWon()
-        } else {
-          c1.flipped = c2.flipped = false
-          this.wrongMatches++
+      const [first, second] = this.flippedCards
+      const firstCard = this.cards[first]
+      const secondCard = this.cards[second]
+
+      if (firstCard.image === secondCard.image) {
+        // 配對成功
+        firstCard.matched = true
+        secondCard.matched = true
+        this.correctMatches++
+
+        // 檢查遊戲是否完成
+        if (this.gameComplete) {
+          this.endGame()
         }
-        this.flippedCards = []
+      } else {
+        // 配對失敗
+        firstCard.flipped = false
+        secondCard.flipped = false
+        this.wrongMatches++
+      }
+
+      this.flippedCards = []
+      this.canFlip = true
+    },
+
+    startTimer() {
+      this.timer = setInterval(() => {
+        this.gameTime++
       }, 1000)
     },
-    gameWon() {
-      this.stopTimer()
-      this.finalTime = this.gameTime
-      this.showVictory = true
+
+    endGame() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+
+      setTimeout(() => {
+        this.showVictory = true
+      }, 500)
     },
-    closeVictory() {
-      this.showVictory = false
+
+    changeGameMode(newMode) {
+      this.gameMode = newMode
+      this.initializeGame()
     },
-    startTimer() {
-      this.gameTimer = setInterval(() => this.gameTime++, 1000)
+
+    restartGame() {
+      this.initializeGame()
     },
-    stopTimer() {
-      clearInterval(this.gameTimer)
-      this.gameTimer = null
-    },
-  },
-  beforeUnmount() {
-    this.stopTimer()
   },
 }
 </script>
@@ -192,10 +233,10 @@ export default {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #5b73e8 100%);
   min-height: 100vh;
-  overflow-x: hidden;
+  color: white;
 }
 
 .app {
@@ -203,115 +244,46 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  padding: 20px;
 }
 
 .game-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
-  padding: 20px;
+  padding: 30px;
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-  max-width: 500px;
+    0 25px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 1200px;
   width: 100%;
-  margin: 0 auto;
+  text-align: center;
 }
 
 .game-title {
-  text-align: center;
-  color: #2d3748;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  margin-bottom: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  margin-bottom: 30px;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(45deg, #ffffff, #f1f5f9, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.game-settings {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.setting-item {
-  background: rgba(102, 126, 234, 0.1);
-  padding: 12px 20px;
-  border-radius: 12px;
-  color: #2d3748;
-  font-weight: 600;
-  font-size: 14px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-}
-
-.setting-item select {
-  background: white;
-  border: 1px solid #e2e8f0;
-  padding: 6px 10px;
-  border-radius: 8px;
-  margin-left: 8px;
-  font-weight: 500;
-  color: #2d3748;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-}
-
-.setting-item select:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-/* 響應式設計 */
+/* 手機優化 */
 @media (max-width: 768px) {
-  .app {
-    padding: 15px;
-    align-items: flex-start;
-    padding-top: 20px;
-  }
-
-  .game-container {
-    padding: 16px;
-    border-radius: 16px;
-    margin-top: 0;
-  }
-
-  .game-title {
-    font-size: 1.75rem;
-    margin-bottom: 16px;
-  }
-
-  .setting-item {
-    padding: 10px 16px;
-    font-size: 13px;
-  }
-
-  .setting-item select {
-    padding: 5px 8px;
-    font-size: 13px;
-  }
-}
-
-@media (max-width: 480px) {
   .app {
     padding: 10px;
   }
 
   .game-container {
-    padding: 12px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 15px;
   }
 
   .game-title {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
-  }
-}
-
-@media (min-width: 1200px) {
-  .game-container {
-    max-width: 600px;
-    padding: 30px;
+    margin-bottom: 20px;
   }
 }
 </style>
