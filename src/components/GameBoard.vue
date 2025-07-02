@@ -115,7 +115,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* 和諧圖案 */
+/* 和諧圖案 - 確保不會透過去 */
 .card-pattern {
   display: flex;
   flex-direction: column;
@@ -124,6 +124,13 @@ export default {
   gap: 3px;
   position: relative;
   z-index: 1;
+  opacity: 1;
+  transition: opacity 0.3s ease; /* 添加透明度過渡 */
+}
+
+/* 翻轉時隱藏背面圖案 */
+.card.flipped .card-pattern {
+  opacity: 0;
 }
 
 .pattern-circle {
