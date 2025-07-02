@@ -10,9 +10,9 @@
       <div class="card-inner">
         <div class="card-face card-back">
           <div class="card-pattern">
-            <div class="pattern-line"></div>
-            <div class="pattern-line"></div>
-            <div class="pattern-line"></div>
+            <div class="pattern-circle"></div>
+            <div class="pattern-diamond"></div>
+            <div class="pattern-star">✦</div>
           </div>
         </div>
         <div class="card-face card-front">{{ card.emoji }}</div>
@@ -46,6 +46,7 @@ export default {
 </script>
 
 <style scoped>
+/* 保持你原有的佈局結構，完全不動 */
 .game-board {
   display: grid;
   justify-content: center;
@@ -72,7 +73,7 @@ export default {
 }
 
 .card-inner {
-  position: relative; /* ✅ 關鍵修正，讓卡片翻轉不會跳動 */
+  position: relative; /* ✅ 保持你的關鍵修正 */
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
@@ -96,9 +97,68 @@ export default {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* 只美化背面，不改變任何定位 */
 .card-back {
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  overflow: hidden;
+}
+
+/* 簡單的光澤效果，不影響佈局 */
+.card-back::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 60%
+  );
+  animation: shimmer 4s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%);
+  }
+}
+
+/* 美化圖案但不影響佈局 */
+.card-pattern {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  position: relative;
+  z-index: 1;
+}
+
+.pattern-circle {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.pattern-diamond {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  transform: rotate(45deg);
+}
+
+.pattern-star {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
 }
 
 .card-front {
@@ -108,8 +168,17 @@ export default {
 }
 
 .card.matched .card-front {
-  background-color: #48bb78;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   font-weight: bold;
+}
+
+/* 簡單的 hover 效果，不影響定位 */
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card:active {
+  transform: scale(0.98);
 }
 </style>
