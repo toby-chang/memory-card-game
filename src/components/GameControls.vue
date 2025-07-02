@@ -1,9 +1,20 @@
 <template>
   <div class="game-controls">
-    <button class="btn btn-primary" @click="$emit('startGame')" v-if="!gameStarted">
-      🎮 開始遊戲
-    </button>
-    <button class="btn btn-secondary" @click="$emit('resetGame')">🔄 重新開始</button>
+    <div class="mode-selector">
+      <label for="game-mode" class="mode-label">遊戲模式：</label>
+      <select
+        id="game-mode"
+        :value="gameMode"
+        @change="$emit('change-mode', $event.target.value)"
+        class="mode-select"
+      >
+        <option value="2x2">2×2 (4張 - 測試)</option>
+        <option value="4x3">4×3 (12張 - 簡單)</option>
+        <option value="4x4">4×4 (16張 - 困難)</option>
+      </select>
+    </div>
+
+    <button @click="$emit('restart')" class="restart-btn">🔄 重新開始</button>
   </div>
 </template>
 
@@ -11,150 +22,135 @@
 export default {
   name: 'GameControls',
   props: {
-    gameStarted: {
-      type: Boolean,
-      default: false,
+    gameMode: {
+      type: String,
+      required: true,
     },
   },
-  emits: ['startGame', 'resetGame'],
+  emits: ['change-mode', 'restart'],
 }
 </script>
 
 <style scoped>
 .game-controls {
   display: flex;
-  justify-content: center;
-  gap: clamp(12px, 3vw, 20px);
-  margin-bottom: 20px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
 }
 
-.btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.mode-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-label {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.mode-select {
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+}
+
+.mode-select:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: #667eea;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.mode-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.restart-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
   border: none;
-  padding: clamp(10px 16px, 3vw, 14px 24px);
   border-radius: 12px;
-  font-size: clamp(0.85rem, 3vw, 1rem);
-  font-weight: 600;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    0 4px 12px rgba(102, 126, 234, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  min-width: clamp(100px, 25vw, 130px);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
-}
-
-.btn:hover::before {
-  left: 100%;
-}
-
-.btn:hover {
+.restart-btn:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
   transform: translateY(-2px);
-  box-shadow:
-    0 8px 20px rgba(102, 126, 234, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
 }
 
-.btn:active {
+.restart-btn:active {
   transform: translateY(0);
-  box-shadow:
-    0 2px 8px rgba(102, 126, 234, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-  box-shadow:
-    0 4px 12px rgba(72, 187, 120, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.btn-primary:hover {
-  box-shadow:
-    0 8px 20px rgba(72, 187, 120, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-.btn-secondary {
-  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-  box-shadow:
-    0 4px 12px rgba(237, 137, 54, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.btn-secondary:hover {
-  box-shadow:
-    0 8px 20px rgba(237, 137, 54, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-/* 手機版優化 */
-@media (max-width: 480px) {
+/* 手機優化 */
+@media (max-width: 768px) {
   .game-controls {
-    gap: 10px;
-    margin-bottom: 16px;
-    padding: 0 10px;
+    gap: 12px;
+    margin: 15px 0;
   }
 
-  .btn {
-    padding: 10px 14px;
-    font-size: 0.85rem;
-    min-width: 90px;
-    border-radius: 10px;
+  .mode-select {
+    min-width: 180px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
   }
-}
 
-/* 平板版優化 */
-@media (min-width: 481px) and (max-width: 768px) {
-  .btn {
-    padding: 12px 20px;
-    font-size: 0.95rem;
+  .restart-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
   }
 }
 
-/* 桌面版優化 */
-@media (min-width: 1024px) {
+/* 平板優化 */
+@media (min-width: 769px) and (max-width: 1024px) {
   .game-controls {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
     gap: 20px;
-    max-width: 300px;
-    margin: 0 auto 20px auto;
   }
 
-  .btn {
-    padding: 14px 24px;
-    font-size: 1rem;
-    min-width: 130px;
+  .mode-selector {
+    flex-direction: row;
+    gap: 10px;
   }
 }
 
-/* 觸控設備優化 */
-@media (hover: none) and (pointer: coarse) {
-  .btn {
-    padding: 12px 20px;
-    font-size: 1rem;
+/* 桌面優化 */
+@media (min-width: 1025px) {
+  .game-controls {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
   }
 
-  .btn:hover {
-    transform: none;
-  }
-
-  .btn:active {
-    transform: scale(0.95);
+  .mode-selector {
+    flex-direction: row;
+    gap: 12px;
   }
 }
 </style>

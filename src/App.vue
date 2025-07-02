@@ -3,20 +3,45 @@
     <div class="game-container">
       <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
 
-      <GameStats
-        :game-time="gameTime"
-        :correct-matches="correctMatches"
-        :wrong-matches="wrongMatches"
-        :accuracy="accuracy"
-      />
+      <!-- 正常佈局 -->
+      <div class="normal-layout">
+        <GameStats
+          :game-time="gameTime"
+          :correct-matches="correctMatches"
+          :wrong-matches="wrongMatches"
+          :accuracy="accuracy"
+        />
 
-      <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
+        <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
 
-      <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
+        <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
+      </div>
+
+      <!-- 橫屏/低高度佈局 -->
+      <div class="landscape-layout">
+        <div class="sidebar-content">
+          <GameStats
+            :game-time="gameTime"
+            :correct-matches="correctMatches"
+            :wrong-matches="wrongMatches"
+            :accuracy="accuracy"
+          />
+
+          <GameControls
+            :game-mode="gameMode"
+            @change-mode="changeGameMode"
+            @restart="restartGame"
+          />
+        </div>
+
+        <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
+      </div>
 
       <VictoryModal
         v-if="showVictory"
         :game-time="gameTime"
+        :correct-matches="correctMatches"
+        :wrong-matches="wrongMatches"
         :accuracy="accuracy"
         @restart="restartGame"
         @close="showVictory = false"
@@ -52,21 +77,21 @@ export default {
       isGameStarted: false,
       canFlip: true,
 
-      // 圖片路徑陣列 (跳過 D0，使用 D1-D16)
+      // 圖片路徑陣列 (使用相對路徑，跳過 D0)
       cardImages: [
-        '/img/diamonds/D1.png',
-        '/img/diamonds/D2.png',
-        '/img/diamonds/D3.png',
-        '/img/diamonds/D4.png',
-        '/img/diamonds/D5.png',
-        '/img/diamonds/D6.png',
-        '/img/diamonds/D7.png',
-        '/img/diamonds/D8.png',
-        '/img/diamonds/D9.png',
-        '/img/diamonds/D10.png',
-        '/img/diamonds/J10.png',
-        '/img/diamonds/K10.png',
-        '/img/diamonds/Q10.png',
+        './img/diamonds/D1.png',
+        './img/diamonds/D2.png',
+        './img/diamonds/D3.png',
+        './img/diamonds/D4.png',
+        './img/diamonds/D5.png',
+        './img/diamonds/D6.png',
+        './img/diamonds/D7.png',
+        './img/diamonds/D8.png',
+        './img/diamonds/D9.png',
+        './img/diamonds/D10.png',
+        './img/diamonds/J10.png',
+        './img/diamonds/K10.png',
+        './img/diamonds/Q10.png',
         // 如果還有更多圖片可以繼續加
       ],
     }
@@ -261,6 +286,54 @@ body {
   text-align: center;
 }
 
+/* 佈局控制 */
+.normal-layout {
+  display: block;
+}
+
+.landscape-layout {
+  display: none;
+}
+
+/* 橫屏/低高度時的左右佈局 */
+@media (max-height: 700px) and (min-width: 768px),
+  (orientation: landscape) and (max-height: 600px) {
+  .normal-layout {
+    display: none;
+  }
+
+  .landscape-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+    align-items: start;
+  }
+
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* 手機橫屏優化 */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+  .normal-layout {
+    display: none;
+  }
+
+  .landscape-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 15px;
+  }
+
+  .game-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+}
+
 .game-title {
   font-size: clamp(1.8rem, 5vw, 2.5rem);
   margin-bottom: 30px;
@@ -271,7 +344,7 @@ body {
   background-clip: text;
 }
 
-/* 手機優化 */
+/* 手機優化 - 完美置中 */
 @media (max-width: 768px) {
   .app {
     padding: 10px;
@@ -280,10 +353,60 @@ body {
   .game-container {
     padding: 20px;
     border-radius: 15px;
+    /* 確保手機版完美置中 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 
   .game-title {
     margin-bottom: 20px;
+  }
+
+  /* 確保所有子元素都置中 */
+  .game-container > * {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* 手機橫屏優化 */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+  .app {
+    align-items: flex-start;
+    padding: 5px;
+  }
+
+  .game-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    grid-template-areas: 'info board';
+    gap: 15px;
+    padding: 15px;
+    max-width: 100vw;
+    text-align: left;
+  }
+
+  .mobile-info {
+    grid-area: info;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .game-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+
+  .game-container > *:nth-child(4) {
+    /* GameBoard */
+    grid-area: board;
+    justify-self: center;
   }
 }
 </style>
