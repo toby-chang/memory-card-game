@@ -139,18 +139,28 @@ export default {
   }
 }
 
-/* 桌面優化 */
-@media (min-width: 1025px) {
+/* 橫屏模式下的樣式優化 */
+@media (orientation: landscape) and (max-height: 600px) {
   .game-controls {
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
+    gap: 12px;
+    margin: 15px 0;
   }
 
   .mode-selector {
-    flex-direction: row;
-    gap: 12px;
+    gap: 8px;
+  }
+
+  .mode-select {
+    min-width: 100%;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .restart-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    width: 100%;
+    white-space: nowrap;
   }
 }
 </style>

@@ -56,10 +56,12 @@ export default {
   gap: 12px;
   padding: 10px;
   margin: 20px auto;
-  width: fit-content;
+  width: 100%;
+  max-width: fit-content;
   /* 確保完美置中 */
   justify-items: center;
   place-items: center;
+  place-content: center;
 }
 
 .board-2x2 {

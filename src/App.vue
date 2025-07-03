@@ -1,16 +1,36 @@
+.game-container { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius:
+20px; padding: 30px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.1); max-width: 1200px; width: 100%; text-align: center; }
 <template>
   <div class="app">
     <div class="game-container">
-      <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
+      <!-- 直屏佈局 -->
+      <div class="portrait-content">
+        <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
 
-      <GameStats
-        :game-time="gameTime"
-        :correct-matches="correctMatches"
-        :wrong-matches="wrongMatches"
-        :accuracy="accuracy"
-      />
+        <GameStats
+          :game-time="gameTime"
+          :correct-matches="correctMatches"
+          :wrong-matches="wrongMatches"
+          :accuracy="accuracy"
+        />
 
-      <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
+        <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
+      </div>
+
+      <!-- 橫屏左側信息欄 -->
+      <div class="landscape-sidebar">
+        <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
+
+        <GameStats
+          :game-time="gameTime"
+          :correct-matches="correctMatches"
+          :wrong-matches="wrongMatches"
+          :accuracy="accuracy"
+        />
+
+        <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
+      </div>
 
       <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
 
@@ -263,7 +283,62 @@ body {
   text-align: center;
 }
 
-/* 移除重複的佈局包裝器，回到簡單結構 */
+/* 佈局控制 - 默認只顯示直屏內容 */
+.portrait-content {
+  display: block;
+  width: 100%;
+}
+
+.landscape-sidebar {
+  display: none;
+}
+
+/* 橫屏時的佈局切換 */
+@media (orientation: landscape) and (max-height: 600px) {
+  /* 強制隱藏直屏內容 */
+  .portrait-content {
+    display: none !important;
+  }
+
+  /* 顯示橫屏側邊欄 */
+  .landscape-sidebar {
+    display: flex !important;
+    flex-direction: column;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+  }
+
+  .app {
+    padding: 10px;
+    align-items: flex-start;
+  }
+
+  .game-container {
+    display: grid !important;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    text-align: left;
+    padding: 15px;
+    align-items: start;
+  }
+
+  .landscape-sidebar .game-title {
+    font-size: 1.2rem;
+    margin: 0 0 15px 0;
+    text-align: center;
+  }
+
+  /* 確保 GameBoard 在右側正確顯示 */
+  .game-container > div:last-child:not(.portrait-content):not(.landscape-sidebar) {
+    justify-self: center;
+    align-self: center;
+  }
+}
 
 .game-title {
   font-size: clamp(1.8rem, 5vw, 2.5rem);
@@ -279,20 +354,26 @@ body {
 @media (max-width: 768px) {
   .app {
     padding: 10px;
+    width: 100%;
+    min-height: 100vh;
   }
 
   .game-container {
     padding: 20px;
     border-radius: 15px;
+    width: 100%;
+    max-width: 100%;
     /* 確保手機版完美置中 */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .game-title {
     margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
   }
 
   /* 確保所有子元素都置中 */
@@ -301,6 +382,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
   }
 
   /* 手機橫屏時只調整間距，保持垂直佈局 */
