@@ -3,39 +3,16 @@
     <div class="game-container">
       <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
 
-      <!-- 正常佈局 -->
-      <div class="normal-layout">
-        <GameStats
-          :game-time="gameTime"
-          :correct-matches="correctMatches"
-          :wrong-matches="wrongMatches"
-          :accuracy="accuracy"
-        />
+      <GameStats
+        :game-time="gameTime"
+        :correct-matches="correctMatches"
+        :wrong-matches="wrongMatches"
+        :accuracy="accuracy"
+      />
 
-        <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
+      <GameControls :game-mode="gameMode" @change-mode="changeGameMode" @restart="restartGame" />
 
-        <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
-      </div>
-
-      <!-- 橫屏/低高度佈局 -->
-      <div class="landscape-layout">
-        <div class="sidebar-content">
-          <GameStats
-            :game-time="gameTime"
-            :correct-matches="correctMatches"
-            :wrong-matches="wrongMatches"
-            :accuracy="accuracy"
-          />
-
-          <GameControls
-            :game-mode="gameMode"
-            @change-mode="changeGameMode"
-            @restart="restartGame"
-          />
-        </div>
-
-        <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
-      </div>
+      <GameBoard :cards="cards" :game-mode="gameMode" @flip-card="flipCard" />
 
       <VictoryModal
         v-if="showVictory"
@@ -286,53 +263,7 @@ body {
   text-align: center;
 }
 
-/* 佈局控制 */
-.normal-layout {
-  display: block;
-}
-
-.landscape-layout {
-  display: none;
-}
-
-/* 橫屏/低高度時的左右佈局 */
-@media (max-height: 700px) and (min-width: 768px),
-  (orientation: landscape) and (max-height: 600px) {
-  .normal-layout {
-    display: none;
-  }
-
-  .landscape-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 30px;
-    align-items: start;
-  }
-
-  .sidebar-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-}
-
-/* 手機橫屏優化 */
-@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
-  .normal-layout {
-    display: none;
-  }
-
-  .landscape-layout {
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 15px;
-  }
-
-  .game-title {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-  }
-}
+/* 移除重複的佈局包裝器，回到簡單結構 */
 
 .game-title {
   font-size: clamp(1.8rem, 5vw, 2.5rem);
@@ -344,7 +275,7 @@ body {
   background-clip: text;
 }
 
-/* 手機優化 - 完美置中 */
+/* 手機優化 - 完美置中，橫豎屏都用垂直佈局 */
 @media (max-width: 768px) {
   .app {
     padding: 10px;
@@ -370,6 +301,22 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  /* 手機橫屏時只調整間距，保持垂直佈局 */
+  @media (orientation: landscape) {
+    .app {
+      padding: 5px;
+    }
+
+    .game-container {
+      padding: 15px;
+    }
+
+    .game-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
   }
 }
 
