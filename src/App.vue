@@ -1,6 +1,3 @@
-.game-container { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius:
-20px; padding: 30px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-border: 1px solid rgba(255, 255, 255, 0.1); max-width: 1200px; width: 100%; text-align: center; }
 <template>
   <div class="app">
     <div class="game-container">
@@ -270,14 +267,8 @@ body {
 }
 
 .game-container {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
+  /* 移除所有背景相關屬性 */
   padding: 30px;
-  box-shadow:
-    0 25px 50px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   max-width: 1200px;
   width: 100%;
   text-align: center;
@@ -305,12 +296,117 @@ body {
     display: flex !important;
     flex-direction: column;
     gap: 15px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
     padding: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     width: 100%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* 防止內容溢出 */
+  }
+
+  /* 橫屏模式下統計卡片的特殊樣式 */
+  .landscape-sidebar .game-stats {
+    width: 100%;
+  }
+
+  .landscape-sidebar .stats-container {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr; /* 時間占更多空間，準確率稍多一點 */
+    gap: 8px;
+    width: 100%;
+  }
+
+  .landscape-sidebar .stat-card {
+    font-size: 0.75rem !important;
+    padding: 6px 4px !important;
+    text-align: center;
+    min-width: 0; /* 允許收縮 */
+    overflow: hidden;
+    white-space: nowrap; /* 防止文字換行 */
+    text-overflow: ellipsis; /* 文字太長時顯示省略號 */
+  }
+
+  /* 橫屏模式下控制區域的特殊樣式 */
+  .landscape-sidebar .game-controls {
+    width: 100%;
+  }
+
+  .landscape-sidebar .controls-container {
+    display: flex !important;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .landscape-sidebar .mode-section {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .landscape-sidebar .mode-label {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+
+  .landscape-sidebar .mode-select {
+    flex: 1;
+    min-width: 120px;
+    font-size: 0.75rem !important;
+  }
+
+  .landscape-sidebar .restart-button {
+    width: 100% !important;
+    margin-top: 5px;
+    font-size: 0.8rem !important;
+    padding: 8px !important;
+  }
+
+  /* 通用的橫屏響應式優化 */
+  .landscape-sidebar * {
+    box-sizing: border-box;
+  }
+
+  /* 確保所有統計卡片都能正確適應 */
+  @media (orientation: landscape) and (max-height: 600px) {
+    .landscape-sidebar .stat-card:nth-child(1) {
+      /* 時間 */
+      grid-column: 1;
+    }
+    .landscape-sidebar .stat-card:nth-child(2) {
+      /* 正確 */
+      grid-column: 2;
+    }
+    .landscape-sidebar .stat-card:nth-child(3) {
+      /* 錯誤 */
+      grid-column: 3;
+    }
+    .landscape-sidebar .stat-card:nth-child(4) {
+      /* 準確率 */
+      grid-column: 4;
+    }
+
+    /* 如果空間真的很緊，自動換行 */
+    @media (max-width: 1000px) {
+      .landscape-sidebar .stats-container {
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: 1fr 1fr;
+      }
+
+      .landscape-sidebar .stat-card:nth-child(3) {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .landscape-sidebar .stat-card:nth-child(4) {
+        grid-column: 2;
+        grid-row: 2;
+      }
+    }
   }
 
   .app {
@@ -320,7 +416,7 @@ body {
 
   .game-container {
     display: grid !important;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 320px 1fr;
     gap: 20px;
     text-align: left;
     padding: 15px;
@@ -360,7 +456,6 @@ body {
 
   .game-container {
     padding: 20px;
-    border-radius: 15px;
     width: 100%;
     max-width: 100%;
     /* 確保手機版完美置中 */
