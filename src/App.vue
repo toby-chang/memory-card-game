@@ -306,89 +306,131 @@ body {
     overflow: hidden; /* 防止內容溢出 */
   }
 
-  /* 橫屏模式下統計卡片的特殊樣式 */
+  /* 橫屏模式下統計卡片的特殊樣式 - 針對 GameStats 組件 */
   .landscape-sidebar .game-stats {
-    width: 100%;
+    width: 100% !important;
+    margin-bottom: 15px !important;
   }
 
-  .landscape-sidebar .stats-container {
+  /* 重新安排 GameStats 的 grid 佈局 */
+  .landscape-sidebar .game-stats {
     display: grid !important;
-    grid-template-columns: minmax(60px, 2fr) minmax(40px, 1fr) minmax(40px, 1fr) minmax(50px, 1.5fr);
-    gap: 6px;
-    width: 100%;
-    min-width: 0;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: 1fr 1fr !important;
+    gap: 8px !important;
+    padding: 0 !important;
   }
 
-  .landscape-sidebar .stat-card {
+  /* 重新排列統計項目順序 */
+  .landscape-sidebar .stat-item:nth-child(1) {
+    /* 時間 */
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .landscape-sidebar .stat-item:nth-child(4) {
+    /* 準確率 */
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .landscape-sidebar .stat-item:nth-child(2) {
+    /* 正確 */
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .landscape-sidebar .stat-item:nth-child(3) {
+    /* 錯誤 */
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .landscape-sidebar .stat-item {
+    padding: 8px 6px !important;
+    font-size: 0.75rem !important;
+    border-radius: 8px !important;
+    min-width: 0;
+    overflow: hidden;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 2px;
+  }
+
+  /* 時間和準確率卡片（第一排）- 數字和標籤分行 */
+  .landscape-sidebar .stat-item:nth-child(1),
+  .landscape-sidebar .stat-item:nth-child(4) {
+    flex-direction: column !important;
+  }
+
+  .landscape-sidebar .stat-item:nth-child(1) .stat-value,
+  .landscape-sidebar .stat-item:nth-child(4) .stat-value {
+    font-size: 0.9rem !important;
+    font-weight: bold !important;
+    margin-bottom: 2px !important;
+  }
+
+  .landscape-sidebar .stat-item:nth-child(1) .stat-label,
+  .landscape-sidebar .stat-item:nth-child(4) .stat-label {
+    font-size: 0.65rem !important;
+    opacity: 0.8;
+  }
+
+  /* 正確和錯誤卡片（第二排）- 數字和標籤同行 */
+  .landscape-sidebar .stat-item:nth-child(2),
+  .landscape-sidebar .stat-item:nth-child(3) {
+    flex-direction: row !important;
+    gap: 4px !important;
+  }
+
+  .landscape-sidebar .stat-item:nth-child(2) .stat-value,
+  .landscape-sidebar .stat-item:nth-child(3) .stat-value {
+    font-size: 0.9rem !important;
+    font-weight: bold !important;
+    margin-bottom: 0 !important;
+  }
+
+  .landscape-sidebar .stat-item:nth-child(2) .stat-label,
+  .landscape-sidebar .stat-item:nth-child(3) .stat-label {
     font-size: 0.7rem !important;
-    padding: 4px 2px !important;
-    text-align: center;
-    min-width: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .landscape-sidebar .stat-card .stat-value {
-    font-size: 0.8rem !important;
-    font-weight: bold;
-    line-height: 1;
-    margin-bottom: 2px;
-  }
-
-  .landscape-sidebar .stat-card .stat-label {
-    font-size: 0.6rem !important;
-    line-height: 1;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
   }
 
-  /* 橫屏模式下控制區域的特殊樣式 */
+  /* 橫屏模式下控制區域的特殊樣式 - 針對 GameControls 組件 */
   .landscape-sidebar .game-controls {
-    width: 100%;
-    min-width: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
   }
 
-  .landscape-sidebar .controls-container {
+  .landscape-sidebar .mode-selector {
     display: flex !important;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: column !important;
+    gap: 6px !important;
     width: 100%;
-    min-width: 0;
-  }
-
-  .landscape-sidebar .mode-section {
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
   }
 
   .landscape-sidebar .mode-label {
-    font-size: 0.75rem;
-    white-space: nowrap;
-    min-width: fit-content;
-    flex-shrink: 0;
+    font-size: 0.75rem !important;
+    text-align: center;
+    margin: 0;
   }
 
   .landscape-sidebar .mode-select {
-    flex: 1;
-    min-width: 100px;
+    width: 100% !important;
+    min-width: auto !important;
     font-size: 0.7rem !important;
-    padding: 4px 6px !important;
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
   }
 
-  .landscape-sidebar .restart-button {
+  .landscape-sidebar .restart-btn {
     width: 100% !important;
-    margin-top: 4px;
     font-size: 0.75rem !important;
-    padding: 6px !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    border-radius: 8px !important;
   }
 
   /* 通用的橫屏響應式優化 */
@@ -398,48 +440,7 @@ body {
 
   /* 針對不同寬度的適應性調整 */
   @media (orientation: landscape) and (max-height: 600px) {
-    /* 超小寬度：改為2×2佈局 */
-    @media (max-width: 800px) {
-      .landscape-sidebar .stats-container {
-        grid-template-columns: 1fr 1fr !important;
-        grid-template-rows: 1fr 1fr;
-        gap: 4px;
-      }
-
-      .landscape-sidebar .stat-card:nth-child(1) {
-        grid-column: 1;
-        grid-row: 1;
-      }
-      .landscape-sidebar .stat-card:nth-child(2) {
-        grid-column: 2;
-        grid-row: 1;
-      }
-      .landscape-sidebar .stat-card:nth-child(3) {
-        grid-column: 1;
-        grid-row: 2;
-      }
-      .landscape-sidebar .stat-card:nth-child(4) {
-        grid-column: 2;
-        grid-row: 2;
-      }
-
-      .landscape-sidebar .mode-section {
-        flex-direction: column !important;
-        align-items: stretch;
-      }
-
-      .landscape-sidebar .mode-label {
-        text-align: center;
-        font-size: 0.7rem;
-      }
-
-      .landscape-sidebar .mode-select {
-        width: 100%;
-        min-width: auto;
-      }
-    }
-
-    /* 極小寬度：進一步壓縮 */
+    /* 極小寬度時進一步優化 */
     @media (max-width: 650px) {
       .landscape-sidebar {
         padding: 12px !important;
@@ -452,16 +453,28 @@ body {
       }
 
       .landscape-sidebar .stat-card {
-        padding: 3px 1px !important;
+        padding: 6px 4px !important;
+        font-size: 0.65rem !important;
+      }
+
+      .landscape-sidebar .stat-card:nth-child(1) .stat-value,
+      .landscape-sidebar .stat-card:nth-child(4) .stat-value {
+        font-size: 0.8rem !important;
+      }
+
+      .landscape-sidebar .stat-card:nth-child(1) .stat-label,
+      .landscape-sidebar .stat-card:nth-child(4) .stat-label {
         font-size: 0.6rem !important;
       }
 
-      .landscape-sidebar .stat-card .stat-value {
-        font-size: 0.7rem !important;
+      .landscape-sidebar .stat-card:nth-child(2) .stat-value,
+      .landscape-sidebar .stat-card:nth-child(3) .stat-value {
+        font-size: 0.8rem !important;
       }
 
-      .landscape-sidebar .stat-card .stat-label {
-        font-size: 0.55rem !important;
+      .landscape-sidebar .stat-card:nth-child(2) .stat-label,
+      .landscape-sidebar .stat-card:nth-child(3) .stat-label {
+        font-size: 0.65rem !important;
       }
 
       .landscape-sidebar .mode-label {
