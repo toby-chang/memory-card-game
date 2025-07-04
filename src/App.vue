@@ -525,8 +525,8 @@ body {
   background-clip: text;
 }
 
-/* 手機優化 - 完美置中，橫豎屏都用垂直佈局 */
-@media (max-width: 768px) {
+/* 手機優化 - 完美置中，只針對小螢幕裝置 */
+@media (max-width: 768px) and (max-height: 600px) {
   /* 強制顯示直屏內容，隱藏橫屏側邊欄 */
   .portrait-content {
     display: block !important;
