@@ -499,7 +499,8 @@ body {
     gap: 15px;
     text-align: left;
     padding: 15px;
-    align-items: start;
+    align-items: start; /* 確保都從頂部開始 */
+    align-content: start; /* 內容從頂部對齊 */
   }
 
   .landscape-sidebar .game-title {
@@ -508,10 +509,33 @@ body {
     text-align: center;
   }
 
-  /* 確保 GameBoard 在右側正確顯示 */
+  /* 確保 GameBoard 在右側正確對齊到頂部 */
   .game-container > div:last-child:not(.portrait-content):not(.landscape-sidebar) {
-    justify-self: center;
-    align-self: center;
+    align-self: start; /* 從頂部開始對齊 */
+    justify-self: center; /* 水平置中 */
+    margin-top: 0; /* 移除任何上邊距 */
+  }
+
+  /* 確保遊戲板塊從頂部開始，與左側對齊 */
+  .landscape-sidebar ~ * {
+    align-self: start !important;
+    margin-top: 0 !important;
+  }
+
+  /* 針對橫屏模式下的 GameBoard 特別優化 */
+  @media (orientation: landscape) and (min-aspect-ratio: 4/3) {
+    .game-board {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
+      align-self: start !important;
+    }
+
+    /* 確保遊戲區域完全對齊左側頂部 */
+    .game-container > *:not(.landscape-sidebar) {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+      align-self: start !important;
+    }
   }
 }
 
