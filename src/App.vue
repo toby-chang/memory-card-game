@@ -525,8 +525,8 @@ body {
   background-clip: text;
 }
 
-/* 手機優化 - 完美置中，只針對小螢幕裝置 */
-@media (max-width: 768px) and (max-height: 600px) {
+/* 手機優化 - 只針對真正的小螢幕 */
+@media (max-width: 600px) {
   /* 強制顯示直屏內容，隱藏橫屏側邊欄 */
   .portrait-content {
     display: block !important;
@@ -547,7 +547,6 @@ body {
     padding: 20px;
     width: 100%;
     max-width: 100%;
-    /* 確保手機版完美置中 */
     display: flex !important;
     flex-direction: column !important;
     align-items: center;
@@ -561,40 +560,12 @@ body {
     text-align: center;
   }
 
-  /* 確保所有子元素都置中 */
   .game-container > * {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-  }
-
-  /* 手機橫屏時只調整間距，保持垂直佈局 */
-  @media (orientation: landscape) {
-    .portrait-content {
-      display: block !important;
-    }
-
-    .landscape-sidebar {
-      display: none !important;
-    }
-
-    .app {
-      padding: 5px;
-    }
-
-    .game-container {
-      padding: 15px;
-      display: flex !important;
-      flex-direction: column !important;
-      grid-template-columns: none !important;
-    }
-
-    .game-title {
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-    }
   }
 }
 
