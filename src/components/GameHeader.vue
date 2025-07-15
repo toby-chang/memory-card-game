@@ -1,3 +1,4 @@
+<!-- GameHeader.vue -->
 <template>
   <h1 class="game-title">🎴 記憶卡牌遊戲</h1>
 </template>

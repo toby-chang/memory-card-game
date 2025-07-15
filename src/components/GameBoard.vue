@@ -1,3 +1,4 @@
+<!--gameboard-->
 <template>
   <div class="game-board" :class="`board-${gameMode}`">
     <div

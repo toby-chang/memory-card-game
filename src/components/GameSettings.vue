@@ -1,3 +1,4 @@
+<!-- GameSettings.vue -->
 <template>
   <div class="game-settings">
     <div class="setting-item">

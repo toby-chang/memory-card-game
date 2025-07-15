@@ -108,9 +108,24 @@ export default {
     }
   },
   methods: {
+    showAllCards() {
+      this.cards.forEach((card) => {
+        card.flipped = true
+      })
+
+      setTimeout(() => {
+        this.cards.forEach((card) => {
+          card.flipped = false
+        })
+        this.canFlip = true
+      }, 2000)
+
+      this.canFlip = false
+    },
     initializeGame() {
       this.resetGameStats()
       this.createCards()
+      this.showAllCards()
     },
 
     resetGameStats() {

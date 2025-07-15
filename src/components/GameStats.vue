@@ -1,3 +1,4 @@
+<!-- GameStats.vue -->
 <template>
   <div class="game-stats">
     <div class="stat-item">

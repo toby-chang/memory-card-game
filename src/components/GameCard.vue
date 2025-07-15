@@ -1,3 +1,4 @@
+<!--Gamecard-->
 <template>
   <div
     class="card"

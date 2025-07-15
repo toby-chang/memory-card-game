@@ -1,3 +1,4 @@
+<!-- MemoryCardGame.vue -->
 <template>
   <div class="game-container">
     <GameHeader />

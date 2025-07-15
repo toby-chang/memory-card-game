@@ -1,3 +1,4 @@
+<!-- GameControls.vue -->
 <template>
   <div class="game-controls">
     <div class="mode-selector">
